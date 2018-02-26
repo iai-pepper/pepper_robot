@@ -1,9 +1,15 @@
+<?xml version="1.0"?>
 <launch>
+
+ <!--group ns="pepper_robot"-->
+ <param name="tf_prefix" value="pepper_robot" />
+
 
   <arg name="nao_ip"            default="$(optenv NAO_IP 127.0.0.1)" />
   <arg name="nao_port"          default="$(optenv NAO_PORT 9559)" />
   <arg name="namespace"           default="pepper_robot" />
-
+ 
+<group ns="pepper_robot">
   <!-- Use CPP node by default for nao_sensors -->
   <arg name="force_python" default="true" />
   <include file="$(find pepper_description)/launch/pepper_publisher.launch" />
@@ -12,6 +18,7 @@
   <include file="$(find naoqi_driver_py)/launch/naoqi_driver.launch">
     <arg name="nao_ip"    value="$(arg nao_ip)" />
   </include>
+</group>
 
   <include file="$(find pepper_sensors_py)/launch/sonar.launch" >
     <arg name="nao_ip"    value="$(arg nao_ip)" />
@@ -35,7 +42,7 @@
   <include file="$(find naoqi_pose)/launch/pose_manager.launch" ns="$(arg namespace)/pose" >
     <arg name="nao_ip"            value="$(arg nao_ip)" />
   </include>
-
+ 
   <!-- launch perception -->
   <include file="$(find pepper_bringup)/launch/perception.launch.xml">
     <arg name="namespace"         value="$(arg namespace)" />
