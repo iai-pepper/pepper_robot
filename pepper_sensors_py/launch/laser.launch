@@ -1,14 +1,22 @@
-
+<?xml version="1.0"?>
 <launch>
-  <env name="PYTHONPATH" value="$(env PYTHONPATH)" /> 
+ <!--group ns="pepper_robot"-->
+ <param name="tf_prefix" value="pepper_robot" />
 
-  <arg name="nao_ip" default="$(optenv NAO_IP 127.0.0.1)" />
-  <arg name="nao_port" default="$(optenv NAO_PORT 9559)" />
+ <env name="PYTHONPATH" value="$(env PYTHONPATH)" /> 
 
-  <arg name="pointcloud" default="True" />
-  <arg name="laserscan" default="False" />
-  <node pkg="pepper_sensors_py" type="laser.py" name="pepper_laser" required="true" args="--pip=$(arg nao_ip) --pport=$(arg nao_port) " output="screen">
+ <arg name="nao_ip" default="$(optenv NAO_IP 127.0.0.1)" />
+ <arg name="nao_port" default="$(optenv NAO_PORT 9559)" />
 
-  </node>
+ <arg name="pointcloud" default="False" />
+ <arg name="laserscan" default="True" />
+
+<!-- if i put the group on top, it complains about nao_ip variable not being used. ? -->
+ <group ns="pepper_robot">
+
+   <node pkg="pepper_sensors_py" type="laser.py" name="pepper_laser" required="true" args="--pip=$(arg nao_ip) --pport=$(arg nao_port) " output="screen">
+
+   </node>
+ </group>
 
 </launch>

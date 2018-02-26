@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
   <arg name="nao_ip"            default="$(optenv NAO_IP 127.0.0.1)" />
   <env name="PYTHONPATH"        value="$(env PYTHONPATH)" /> 
