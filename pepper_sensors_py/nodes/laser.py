@@ -144,7 +144,7 @@ class NaoqiLaser(NaoqiNode):
             self.laserSRDLeftPublisher = rospy.Publisher(self.TOPIC_LASER_SRD_LEFT+'scan', LaserScan, queue_size=1)
             self.laserSRDRightPublisher = rospy.Publisher(self.TOPIC_LASER_SRD_RIGHT+'scan', LaserScan, queue_size=1)
 
-        self.laserSRDFrontPublisher_test = rospy.Publisher("~/pepper_navigation/front", LaserScan, queue_size=1)
+        self.laserSRDFrontPublisher_test = rospy.Publisher("pepper_navigation/front", LaserScan, queue_size=1)
 
     # (re-) connect to NaoQI:
     def connectNaoQi(self):
