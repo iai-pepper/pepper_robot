@@ -69,22 +69,22 @@ class NaoqiLaser(NaoqiNode):
 
     # frame id to publish
     PARAM_LASER_SHOVEL_FRAME = '~laser_shovel_frame_id'
-    PARAM_LASER_SHOVEL_FRAME_DEFAULT = 'ShovelLaser_frame'
+    PARAM_LASER_SHOVEL_FRAME_DEFAULT = 'pepper_robot/ShovelLaser_frame'
 
     PARAM_LASER_GROUND_LEFT_FRAME = '~laser_ground_left_frame_id'
-    PARAM_LASER_GROUND_LEFT_FRAME_DEFAULT = 'VerticalLeftLaser_frame'
+    PARAM_LASER_GROUND_LEFT_FRAME_DEFAULT = 'pepper_robot/VerticalLeftLaser_frame'
 
     PARAM_LASER_GROUND_RIGHT_FRAME = '~laser_ground_right_frame_id'
-    PARAM_LASER_GROUND_RIGHT_FRAME_DEFAULT = 'VerticalRightLaser_frame'
+    PARAM_LASER_GROUND_RIGHT_FRAME_DEFAULT = 'pepper_robot/VerticalRightLaser_frame'
 
     PARAM_LASER_SRD_FRONT_FRAME = '~laser_srd_front_frame_id'
-    PARAM_LASER_SRD_FRONT_FRAME_DEFAULT = 'SurroundingFrontLaser_frame'
+    PARAM_LASER_SRD_FRONT_FRAME_DEFAULT = 'pepper_robot/SurroundingFrontLaser_frame'
 
     PARAM_LASER_SRD_LEFT_FRAME = '~laser_srd_left_frame_id'
-    PARAM_LASER_SRD_LEFT_FRAME_DEFAULT = 'SurroundingLeftLaser_frame'
+    PARAM_LASER_SRD_LEFT_FRAME_DEFAULT = 'pepper_robot/SurroundingLeftLaser_frame'
 
     PARAM_LASER_SRD_RIGHT_FRAME = '~laser_srd_right_frame_id'
-    PARAM_LASER_SRD_RIGHT_FRAME_DEFAULT = 'SurroundingRightLaser_frame'
+    PARAM_LASER_SRD_RIGHT_FRAME_DEFAULT = 'pepper_robot/SurroundingRightLaser_frame'
 
     TOPIC_LASER_SHOVEL = 'laser/shovel/'
     TOPIC_LASER_GROUND_LEFT = 'laser/ground_left/'
