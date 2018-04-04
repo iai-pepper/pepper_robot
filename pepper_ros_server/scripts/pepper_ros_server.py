@@ -105,12 +105,28 @@ def pepper_autonomous_life_get_state(req):
 def pepper_autonomous_life_trigger_interactivity(req):
     if not autonomous_life.getState() == 'interactive':
         rospy.log('Switch to interactive mode')
+        motion.wakeUp()
         autonomous_life.setState('interactive')
+        motion.rest()
         return TriggerResponse(True,'interactivity enabled')
     else:
         rospy.log('Disable autonomous life')
+        motion.wakeUp()
         autonomous_life.setState('disabled')
+        motion.rest()
         return TriggerResponse(True,'autonomous life disabled')
+
+# The robot wakes up by returning to the init position
+# http://doc.aldebaran.com/2-5/naoqi/motion/control-stiffness-api.html#ALMotionProxy::wakeUp
+def pepper_motion_wake_up(req):
+    motion.wakeUp()
+    return TriggerResponse(True,'wake up robot')
+
+# The robot moves into a rest position and turns the motors off
+# http://doc.aldebaran.com/2-5/naoqi/motion/control-stiffness-api.html#ALMotionProxy::rest
+def pepper_motion_rest(req):
+    motion.rest()
+    return TriggerResponse(True,'rest robot')
 
 
 # The server announces the service to our ROSCORE and stays open until the Core is closed or the Node is manually
@@ -132,7 +148,9 @@ def pepper_ros_server():
     s_decrease_volume = rospy.Service(prefix+'/decrease_volume',Trigger,pepper_decrease_volume)
     s_set_life = rospy.Service(prefix+'/autonomous_life/set_state', SetString, pepper_autonomous_life_set_state)
     s_get_life = rospy.Service(prefix+'/autonomous_life/get_state', GetString, pepper_autonomous_life_get_state)
-    s_get_life = rospy.Service(prefix+'/autonomous_life/trigger_interactivity', Trigger, pepper_autonomous_life_trigger_interactivity)
+    s_trigger_life = rospy.Service(prefix+'/autonomous_life/trigger_interactivity', Trigger, pepper_autonomous_life_trigger_interactivity)
+    s_motion_wake = rospy.Service(prefix+'/motion/wake_up', Trigger, pepper_motion_wake_up)
+    s_rest = rospy.Service(prefix+'/motion/rest', Trigger, pepper_motion_rest)
     rospy.spin()
 
 
@@ -151,9 +169,12 @@ if __name__ == "__main__":
     global audiodevice
     global tablet
     global tts
+    global autonomous_life
+    global motion
     global default_logo
     # Get the different services
     autonomous_life = session.service("ALAutonomousLife")
+    motion = session.Service("ALMotion")
     audiodevice = session.service("ALAudioDevice")
     tablet = session.service("ALTabletService")
     tts = session.service("ALTextToSpeech")
