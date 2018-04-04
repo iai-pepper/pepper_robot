@@ -11,6 +11,7 @@ from naoqi_bridge_msgs.srv import *
 import rospy
 import qi
 import os
+import rospkg
 
 # Mutes the robot if it is unmuted or
 # unmute if the robot is muted
@@ -41,9 +42,22 @@ def pepper_show_image_no_cache(req):
     return SetStringResponse(True)
 
 # Shows the image of the given url
-def pepper_hide_image(req):
-    tablet.hideImage()
+def pepper_hide_image(req):  
+    if default_logo == "":
+    	tablet.hideImage()
+    else:
+    	tablet.showImage(default_logo)
     return TriggerResponse(True,'Hidden')
+
+# reloads the default logo  path for the tablet
+# by getting the param
+def pepper_reload_logo(req):
+	default_logo = rospy.get_param("pepper_default_logo","")
+    if default_logo.startsWidth('package://'):
+    	no_prefix = default_logo[len('package://'),:]
+    	[package_name,file_path] = no_prefix.split('/',1)
+    	default_logo = rospkg.RosPack().get_path(package_name) + 'file_path'
+    return SetStringResponse(True)
 
 # Lets pepper say the given string
 def pepper_say(req):
@@ -110,6 +124,7 @@ def pepper_ros_server():
     s_tablet_show_image = rospy.Service(prefix+'/show_image', SetString, pepper_show_image)
     s_tablet_show_image_nc = rospy.Service(prefix+'/show_image_no_cache', SetString, pepper_show_image_no_cache)
     s_tablet_hide = rospy.Service(prefix+'/hide_image', Trigger, pepper_hide_image)
+    s_pepper_reload_logo = rospy.Service(prefix+'/reload_logo', Trigger, pepper_reload_logo)
     s_say = rospy.Service(prefix+'/say', SetString, pepper_say)
     s_set_volume = rospy.Service(prefix+'/set_volume', SetFloat, pepper_set_volume)
     s_get_volume = rospy.Service(prefix+'/get_volume', GetFloat, pepper_get_volume)
@@ -136,10 +151,21 @@ if __name__ == "__main__":
     global audiodevice
     global tablet
     global tts
+    global default_logo
     # Get the different services
     autonomous_life = session.service("ALAutonomousLife")
     audiodevice = session.service("ALAudioDevice")
     tablet = session.service("ALTabletService")
     tts = session.service("ALTextToSpeech")
+
+    # If the default logo parameter is set show the logo on the tablet
+    default_logo = rospy.get_param("pepper_default_logo","")
+    if default_logo.startsWidth('package://'):
+    	no_prefix = default_logo[len('package://'),:]
+    	[package_name,file_path] = no_prefix.split('/',1)
+    	default_logo = rospkg.RosPack().get_path(package_name) + 'file_path'
+    
+    tablet.showImage(default_logo)
+
 
     pepper_ros_server()
