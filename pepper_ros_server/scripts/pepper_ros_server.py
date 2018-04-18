@@ -26,38 +26,30 @@ def pepper_trigger_mute(req):
 # Sets the mute status to the given bool
 def pepper_set_mute(req):
     audiodevice.muteAudioOut(req.data)
-    return TriggerResponse(True,'Muted')
+    return SetBoolResponse(True,'Muted')
 
 # Shows the image of the given url
 # by downloading it. Use old version
 # of image if it's already downloaded
 def pepper_show_image(req):
-    tablet.showImage(req.data)
+    if req.data:   
+        tablet.showImage(req.data)
     return SetStringResponse(True)
 
 # Shows the image of the given url
 # without caching like in show_image
 def pepper_show_image_no_cache(req):
-    tablet.showImageNoCache(req.data)
+    if req.data:   
+        tablet.showImageNoCache(req.data)
     return SetStringResponse(True)
 
 # Shows the image of the given url
 def pepper_hide_image(req):  
-    if default_logo == "":
+    if not default_logo:
     	tablet.hideImage()
     else:
     	tablet.showImage(default_logo)
     return TriggerResponse(True,'Hidden')
-
-# reloads the default logo  path for the tablet
-# by getting the param
-def pepper_reload_logo(req):
-	default_logo = rospy.get_param("pepper_default_logo","")
-    if default_logo.startsWidth('package://'):
-    	no_prefix = default_logo[len('package://'),:]
-    	[package_name,file_path] = no_prefix.split('/',1)
-    	default_logo = rospkg.RosPack().get_path(package_name) + 'file_path'
-    return SetStringResponse(True)
 
 # Lets pepper say the given string
 def pepper_say(req):
@@ -95,7 +87,9 @@ def pepper_decrease_volume(req):
 # Possible states:
 # http://doc.aldebaran.com/2-5/ref/life/state_machine_management.html#autonomouslife-states
 def pepper_autonomous_life_set_state(req):
+    motion.rest()
     autonomous_life.setState(req.data)
+    motion.wakeUp()
     return SetStringResponse(True)
 
 def pepper_autonomous_life_get_state(req):
@@ -104,17 +98,21 @@ def pepper_autonomous_life_get_state(req):
 # Sets state to interactive if 
 def pepper_autonomous_life_trigger_interactivity(req):
     if not autonomous_life.getState() == 'interactive':
-        rospy.log('Switch to interactive mode')
-        motion.wakeUp()
+        rospy.loginfo('Switch to interactive mode')
+        motion.rest()
         autonomous_life.setState('interactive')
-        motion.rest()
-        return TriggerResponse(True,'interactivity enabled')
-    else:
-        rospy.log('Disable autonomous life')
         motion.wakeUp()
-        autonomous_life.setState('disabled')
+        message = 'interactivity enabled'
+    else:
+        rospy.loginfo('Disable autonomous life')
         motion.rest()
-        return TriggerResponse(True,'autonomous life disabled')
+        autonomous_life.setState('disabled')
+        motion.wakeUp()
+        message = 'autonomous life disabled'
+    if default_logo:   
+    	rospy.sleep(10.0)
+        tablet.showImage(default_logo)
+    return TriggerResponse(True,message)
 
 # The robot wakes up by returning to the init position
 # http://doc.aldebaran.com/2-5/naoqi/motion/control-stiffness-api.html#ALMotionProxy::wakeUp
@@ -140,7 +138,6 @@ def pepper_ros_server():
     s_tablet_show_image = rospy.Service(prefix+'/show_image', SetString, pepper_show_image)
     s_tablet_show_image_nc = rospy.Service(prefix+'/show_image_no_cache', SetString, pepper_show_image_no_cache)
     s_tablet_hide = rospy.Service(prefix+'/hide_image', Trigger, pepper_hide_image)
-    s_pepper_reload_logo = rospy.Service(prefix+'/reload_logo', Trigger, pepper_reload_logo)
     s_say = rospy.Service(prefix+'/say', SetString, pepper_say)
     s_set_volume = rospy.Service(prefix+'/set_volume', SetFloat, pepper_set_volume)
     s_get_volume = rospy.Service(prefix+'/get_volume', GetFloat, pepper_get_volume)
@@ -174,19 +171,15 @@ if __name__ == "__main__":
     global default_logo
     # Get the different services
     autonomous_life = session.service("ALAutonomousLife")
-    motion = session.Service("ALMotion")
+    motion = session.service("ALMotion")
     audiodevice = session.service("ALAudioDevice")
     tablet = session.service("ALTabletService")
     tts = session.service("ALTextToSpeech")
 
     # If the default logo parameter is set show the logo on the tablet
     default_logo = rospy.get_param("pepper_default_logo","")
-    if default_logo.startsWidth('package://'):
-    	no_prefix = default_logo[len('package://'),:]
-    	[package_name,file_path] = no_prefix.split('/',1)
-    	default_logo = rospkg.RosPack().get_path(package_name) + 'file_path'
-    
-    tablet.showImage(default_logo)
+    if default_logo:   
+        tablet.showImage(default_logo)
 
 
     pepper_ros_server()
