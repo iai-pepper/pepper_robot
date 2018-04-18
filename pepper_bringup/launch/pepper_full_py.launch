@@ -3,7 +3,8 @@
 
  <!--group ns="pepper_robot"-->
 	<param name="tf_prefix" value="pepper_robot" />
-  <param name="pepper_default_logo" value="package://pepper_ros_server/img/ease_logo.png" />
+  <param name="pepper_default_logo" value="https://raw.githubusercontent.com/iai-pepper/pepper_robot/master/pepper_ros_server/img/ease_logo.png" />
+  <!--<param name="pepper_default_logo" value="https://raw.githubusercontent.com/iai-pepper/pepper_robot/master/pepper_ros_server/img/smile_logo.png" /> -->
 
 	<arg name="nao_ip"      default="$(optenv NAO_IP 127.0.0.1)" />
 	<arg name="nao_port"    default="$(optenv NAO_PORT 9559)" />
