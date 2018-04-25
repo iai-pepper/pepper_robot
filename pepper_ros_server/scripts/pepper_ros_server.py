@@ -110,7 +110,7 @@ def pepper_autonomous_life_trigger_interactivity(req):
         motion.wakeUp()
         message = 'autonomous life disabled'
     if default_logo:   
-    	rospy.sleep(10.0)
+        rospy.sleep(10.0)
         tablet.showImage(default_logo)
     return TriggerResponse(True,message)
 
